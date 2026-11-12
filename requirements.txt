@@ -1,0 +1,11 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+customtkinter>=5.2,<7
+ultralytics>=8.3,<9
+easyocr>=1.7,<2
+fast-plate-ocr[onnx]>=1.1,<2
+opencv-python-headless>=4.10,<6
+Pillow>=10,<13
+numpy>=1.26,<3
+torch>=2.2,<3
+torchvision>=0.17,<1
