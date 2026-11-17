@@ -29,7 +29,7 @@
 ## Cấu trúc chính
 
 ```text
-DoAn2/
+XuLyAnh/
 |-- CAI_DAT_LAN_DAU.bat
 |-- CHAY_CHUONG_TRINH.bat
 |-- KIEM_TRA_HE_THONG.py
@@ -47,79 +47,44 @@ DoAn2/
 
 ## Cài đặt trên Windows
 
-Yêu cầu khuyến nghị: Windows 10/11 64-bit, RAM từ 8 GB và còn khoảng 5 GB dung lượng trống. Không bắt buộc có GPU rời.
+Bản đầy đủ cần Windows 10/11 64-bit, Python 3.10–3.12 (khuyến nghị 3.12) và Internet khi cài thư viện hoặc tải mô hình OCR lần đầu. Ứng dụng có thể chạy bằng CPU.
 
-### Cách đơn giản cho máy mới
+```powershell
+git clone https://github.com/hoaian-png/XuLyAnh.git
+cd XuLyAnh
+```
 
-1. Sao chép **toàn bộ thư mục `DoAn2`** sang máy mới. Không cần đặt ở ổ C; có thể đặt ở Desktop, ổ D hoặc USB.
-2. Cài **Python 3.12 64-bit** và chọn `Add Python to PATH` trong màn hình cài đặt.
-3. Kết nối Internet.
-4. Bấm đúp `CAI_DAT_LAN_DAU.bat` và chờ thông báo `CAI DAT THANH CONG`.
-5. Từ lần sau, chỉ cần bấm đúp `CHAY_CHUONG_TRINH.bat`.
+### Tệp cần có trước khi cài
 
-Bộ cài tự tạo `.venv`, cài thư viện CPU và tải sẵn mô hình OCR. Vì vậy máy không có card đồ họa NVIDIA vẫn chạy được.
+Bản trên GitHub hiện thiếu bốn tệp mà chương trình cần. Lấy chúng từ bản đầy đủ của dự án và đặt đúng vị trí:
 
-### Cài thủ công trong Terminal
+- `models/best.pt` — trọng số đã huấn luyện để phát hiện biển số.
+- `services/plate_detector.py`, `services/plate_ocr.py` và `services/parking_database.py` — các mô-đun được `main.py` nhập trực tiếp.
 
-Tạo môi trường ảo bằng Python 3.12:
+`yolo11n.pt` trong kho là tệp riêng. `main.py` và `CHAY_CHUONG_TRINH.bat` đều tìm `models/best.pt`. Kho hiện tại chỉ có thể chuẩn bị môi trường cho đến khi đủ các tệp trên.
+
+### Cài đặt và chạy bản đầy đủ
+
+Bấm đúp `CAI_DAT_LAN_DAU.bat` để tạo môi trường ảo, cài thư viện và tải trước mô hình FastPlateOCR. Khi bộ cài báo thành công, bấm đúp `CHAY_CHUONG_TRINH.bat`.
+
+Nếu cài bằng PowerShell, chạy tại thư mục dự án:
 
 ```powershell
 py -3.12 -m venv .venv
-```
-
-Kích hoạt môi trường:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy RemoteSigned
-.\.venv\Scripts\Activate.ps1
-```
-
-Cài các thư viện:
-
-```powershell
-python -m pip install --upgrade pip setuptools wheel
-python -m pip install -r requirements.txt
-```
-
-## Chạy chương trình
-
-Có thể bấm đúp:
-
-```text
-CHAY_CHUONG_TRINH.bat
-```
-
-Hoặc chạy trong Terminal:
-
-```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe KIEM_TRA_HE_THONG.py
 .\.venv\Scripts\python.exe main.py
 ```
 
-Có thể kiểm tra máy đã đủ thư viện hay chưa bằng:
+`KIEM_TRA_HE_THONG.py` kiểm tra thư viện và trọng số. Kiểm tra thêm thư mục `services/` trước khi chạy `main.py`.
 
-```powershell
-.\.venv\Scripts\python.exe KIEM_TRA_HE_THONG.py
-```
+## Cách sử dụng
 
-## Cách kiểm tra
-
-1. Chọn **CỔNG VÀO**.
-2. Bấm **Tải Ảnh Kiểm Tra** hoặc mở webcam.
-3. Bấm **QUÉT BIỂN SỐ**.
-4. Chuyển sang **CỔNG RA** và quét lại cùng xe.
-5. Kiểm tra trạng thái mở cổng, thời gian, phí, doanh thu và nhật ký.
+1. Chọn **CỔNG VÀO**, bấm **Tải Ảnh Kiểm Tra**, chọn `test_plate.jpg` hoặc ảnh biển số của bạn rồi bấm **QUÉT BIỂN SỐ**.
+2. Chọn **CỔNG RA** và quét lại cùng biển số để xem thời gian gửi, phí và nhật ký vào/ra.
+3. Để dùng webcam, bấm **Cam Cổng Vào (Webcam)** hoặc **Cam Cổng Ra (Webcam)**. Nếu webcam chưa hoạt động, kiểm tra quyền truy cập camera trong cài đặt Windows.
+4. Nhập biển số rồi bấm **Tra Cứu Biển Số Trong Bãi** để tra cứu xe. Bấm **CSV** trong khung nhật ký để chọn nơi lưu tệp xuất.
 
 ## Dữ liệu lưu trữ
 
-Cơ sở dữ liệu được tạo tự động tại `data/parking.db`. Dữ liệu vẫn còn sau khi tắt và mở lại chương trình.
-
-## Lưu ý
-
-- Khi chuyển sang máy khác phải sao chép các tệp `main.py`, `requirements.txt`, hai tệp `.bat`, thư mục `services` và thư mục `models`.
-- Không cần sao chép `.venv`; mỗi máy nên chạy `CAI_DAT_LAN_DAU.bat` để tạo môi trường riêng.
-- Phải có tệp `models/best.pt` trước khi chạy.
-- Chương trình dùng đường dẫn tương đối theo vị trí dự án nên không phụ thuộc vào `C:\BaoCao\DoAn2`.
-- Máy Windows 10/11 64-bit không có GPU vẫn chạy bằng CPU; GPU chỉ giúp xử lý nhanh hơn.
-- Ảnh càng rõ, biển số càng thẳng và đủ sáng thì kết quả càng chính xác.
-- Webcam cần được cấp quyền trong **Settings > Privacy & security > Camera**.
-- Không khuyến nghị Python 3.13 trở lên; không dùng Python 3.15 cho dự án này.
+Bản đầy đủ lưu dữ liệu SQLite tại `data/parking.db`. Khi chuyển sang máy khác, sao chép mã nguồn, `services/`, `models/` và cơ sở dữ liệu nếu cần giữ lịch sử. Tạo lại môi trường `.venv` bằng bộ cài trên máy mới.
